@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Quiz Trainer</title>
-  <meta name="asset-version" content="v2026.05.07.2">
+  <meta name="asset-version" content="v2026.05.07.3">
   
   <!-- Bootstrap 5.3.8 -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" 
@@ -67,6 +67,8 @@
 <div class="container-fluid mt-4">
   <div class="row justify-content-center">
     <main class="col-lg-10 col-xl-9 px-md-4">
+      
+      <!-- Quick Stats -->
       <div class="card bg-dark text-white mb-4" id="quickStatsCard">
         <div class="card-body">
           <h5 class="card-title" data-i18n="quick_stats">Quick Stats</h5>
@@ -74,10 +76,26 @@
         </div>
       </div>
 
+      <!-- Selector Card -->
       <div class="card bg-dark text-white mb-4" id="selectorCard">
         <div class="card-body">
           <h5 data-i18n="select_test_file">Select test file</h5>
+          
+          <!-- Built-in vs Custom Toggle -->
+          <select class="form-select mb-3" id="fileSourceSelect">
+            <option value="built-in">Built-in Tests</option>
+            <option value="custom">Load Your Own QTI File (.xml)</option>
+          </select>
+
+          <!-- Built-in File Selector -->
           <select class="form-select mb-3" id="qtiFileSelect"></select>
+
+          <!-- Custom File Upload -->
+          <div class="mb-3" id="customFileGroup" style="display: none;">
+            <label class="form-label">Choose your QTI XML file</label>
+            <input type="file" id="customFileInput" accept=".xml" class="form-control">
+            <small class="text-muted">Supports standard QTI XML files</small>
+          </div>
 
           <div class="mb-3">
             <label for="timeLimitSelect" class="form-label" data-i18n="time_limit">Time limit</label>
@@ -95,7 +113,9 @@
         </div>
       </div>
 
+      <!-- Quiz Area -->
       <div id="quizContainer" class="mt-4" style="display:none;"></div>
+
     </main>
   </div>
 </div>
@@ -212,6 +232,108 @@ function populateTimeLimitSelect() {
   }
 }
 
+
+// ── Handle custom file upload ───────────────────────────────────────────
+$('#customFileInput').on('change', function(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  if (!file.name.toLowerCase().endsWith('.xml')) {
+    alert("Please select a valid .xml file");
+    return;
+  }
+
+  const reader = new FileReader();
+  
+  reader.onload = function(event) {
+    const xmlContent = event.target.result;
+
+    // Hide selector and show quiz
+    $('#selectorCard, #quickStatsCard').hide();
+    $('#quizContainer').show();
+    showProgressBar();
+
+    // Start quiz with custom content
+    startCustomQuiz(xmlContent, file.name);
+  };
+
+  reader.readAsText(file);
+});
+
+// New function to handle custom XML
+function startCustomQuiz(xmlContent, filename) {
+  try {
+    const parser = new QTIParser(xmlContent);
+    const introduction = parser.getIntroduction();
+    let questions = parser.getAllQuestions();
+
+    if (questions.length === 0) {
+      alert("No questions found in the XML file.");
+      return;
+    }
+
+    const minutes = parseInt(localStorage.getItem('quizTimeLimit')) || 60;
+
+    quizState = {
+      questions,
+      introduction,
+      currentIndex: 0,
+      userAnswers: {},
+      trainingMode: $('#trainingModeCheck').is(':checked'),
+      timeLeft: minutes * 60,
+      fileName: filename || "custom-quiz.xml",
+      originalTime: minutes
+    };
+
+    startTimer();
+    renderProgressBar();
+
+    if (introduction) {
+      showIntroduction();
+    } else {
+      renderQuestion();
+    }
+
+  } catch (err) {
+    console.error(err);
+    alert("Failed to parse the XML file. Please make sure it's a valid QTI file.");
+  }
+}
+  
+// Toggle custom file input
+$('#fileSourceSelect').on('change', function() {
+  if ($(this).val() === 'custom') {
+    $('#customFileGroup').show();
+    $('#qtiFileSelect').hide();
+  } else {
+    $('#customFileGroup').hide();
+    $('#qtiFileSelect').show();
+  }
+});
+
+// Handle custom file upload
+$('#customFileInput').on('change', function(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  if (!file.name.toLowerCase().endsWith('.xml')) {
+    alert("Please select a valid .xml file");
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = function(event) {
+    const xmlContent = event.target.result;
+    
+    $('#selectorCard, #quickStatsCard').hide();
+    $('#quizContainer').show();
+    showProgressBar();
+
+    startCustomQuiz(xmlContent, file.name);
+  };
+  reader.readAsText(file);
+});
+  
 // ── Main ready handler ──────────────────────────────────────────────────────
 
 $(document).ready(function() {
