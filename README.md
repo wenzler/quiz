@@ -31,8 +31,8 @@ A modern, offline-first QTI quiz application built for certification preparation
 
 ## How to Use
 
-1. Clone the repository
-2. Open `index.html` in a modern browser (no server required)
+1. Clone the repository to your servers httpdocs area
+2. Open `index.html` in a modern browser 
 3. Select a test file
 4. Choose time limit and mode
 5. Start training or exam
