@@ -47,6 +47,10 @@ A modern, offline-first QTI quiz application built for certification preparation
 | `P`        | Previous Question         |
 | `F`        | Finish Attempt            |
 
+## Demo
+
+![Preview](https://wenzler.github.io/quiz/)
+
 ## License
 
 GPL V3+
