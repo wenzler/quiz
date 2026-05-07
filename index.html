@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="en" data-bs-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Quiz Trainer</title>
+  <meta name="asset-version" content="v2026.05.07.2">
+  
+  <!-- Bootstrap 5.3.8 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" 
+        rel="stylesheet" 
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" 
+        crossorigin="anonymous">
+  <!-- Feather Icons -->
+  <script src="https://unpkg.com/feather-icons"></script>
+  <!-- i18next -->
+  <script src="https://unpkg.com/i18next@23/dist/umd/i18next.min.js"></script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3"></script>
+  <!-- Confetti.js -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+
+  <link href="css/custom.css" rel="stylesheet">
+</head>
+<body>
+
+<!-- Top Navbar -->
+<nav class="navbar navbar-expand-lg sticky-top bg-dark border-bottom border-secondary px-3 shadow">
+  <div class="container-fluid">
+    <a class="navbar-brand text-white fw-bold" href="index.html">Quiz Trainer</a>
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item">
+          <a class="nav-link text-white" href="index.html">
+            <span data-feather="home" class="me-1"></span> <span data-i18n="dashboard">Dashboard</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-white" href="#" id="resetQuizBtn">
+            <span data-feather="refresh-cw" class="me-1"></span> <span data-i18n="restart_attempt" aria-keyshortcuts="r">Restart Attempt</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-white" href="#" id="statsBtn">
+            <span data-feather="bar-chart-2" class="me-1"></span> <span data-i18n="statistics">Statistics</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- Progress bar -->
+<div id="quizProgressWrapper" class="sticky-top bg-dark shadow-sm" style="z-index: 1000; display: none; top: 56px;">
+  <div class="container-fluid px-3 py-2">
+    <div class="progress" style="height: 24px; cursor: pointer;" id="questionProgress"></div>
+  </div>
+</div>
+
+<!-- Main content -->
+<div class="container-fluid mt-4">
+  <div class="row justify-content-center">
+    <main class="col-lg-10 col-xl-9 px-md-4">
+      <div class="card bg-dark text-white mb-4" id="quickStatsCard">
+        <div class="card-body">
+          <h5 class="card-title" data-i18n="quick_stats">Quick Stats</h5>
+          <div id="quickStats">Loading stats...</div>
+        </div>
+      </div>
+
+      <div class="card bg-dark text-white mb-4" id="selectorCard">
+        <div class="card-body">
+          <h5 data-i18n="select_test_file">Select test file</h5>
+          <select class="form-select mb-3" id="qtiFileSelect"></select>
+
+          <div class="mb-3">
+            <label for="timeLimitSelect" class="form-label" data-i18n="time_limit">Time limit</label>
+            <select class="form-select" id="timeLimitSelect"></select>
+          </div>
+
+          <div class="form-check mt-3 mb-2">
+            <input class="form-check-input" type="checkbox" id="trainingModeCheck">
+            <label class="form-check-label" for="trainingModeCheck" data-i18n="training_mode_label">
+              Training mode (show feedback after each question)
+            </label>
+          </div>
+
+          <button class="btn btn-primary" id="loadAndStart" aria-keyshortcuts="s" data-i18n="start_attempt">Start Attempt</button>
+        </div>
+      </div>
+
+      <div id="quizContainer" class="mt-4" style="display:none;"></div>
+    </main>
+  </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" 
+        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" 
+        crossorigin="anonymous"></script>
+<script>
+  const release_version = document.querySelector('meta[name="asset-version"]').content;
+  const load = (src) => {
+    const s = document.createElement('script');
+    s.src = src + '?release_version=' + release_version;
+    document.head.appendChild(s);
+  };
+  load('js/qti-parser.js');
+  load('js/quiz-engine.js');
+  load('js/stats.js');
+</script>
+
+<script>
+// ── Load questions from static JSON manifest ────────────────────────────────
+
+function loadQuestions() {
+  const v = document.querySelector('meta[name="asset-version"]').content;
+  fetch(`questions/questions.json?v=${v}`)
+    .then(r => {
+      if (!r.ok) throw new Error('Failed to load questions.json');
+      return r.json();
+    })
+    .then(groups => {
+      const $select = $('#qtiFileSelect');
+      $select.empty();
+      $select.append('<option value="">-- ' + (i18next.t('choose_test') || 'Choose test') + ' --</option>');
+
+      groups.forEach(group => {
+        const $optgroup = $(`<optgroup label="${group.group}"></optgroup>`);
+        group.files.forEach(file => {
+          $optgroup.append(`<option value="${file}">${file}</option>`);
+        });
+        $select.append($optgroup);
+      });
+
+      const lastFile = localStorage.getItem('lastQtiFile');
+      if (lastFile) $select.val(lastFile);
+    })
+    .catch(err => {
+      console.error('Error loading questions:', err);
+      $('#qtiFileSelect').html('<option value="">Error loading test files</option>');
+    });
+}
+
+// ── i18n, time selector & helpers ───────────────────────────────────────────
+
+const supportedLangs = ['en', 'de'];
+
+function detectBrowserLanguage() {
+  const preferred = navigator.languages || [navigator.language || 'en'];
+  for (let lang of preferred) {
+    const base = lang.split(/[-_]/)[0].toLowerCase();
+    if (supportedLangs.includes(base)) return base;
+  }
+  return 'en';
+}
+
+async function initI18n() {
+  let lng = localStorage.getItem('lang') || detectBrowserLanguage();
+
+  try {
+    const v = document.querySelector('meta[name="asset-version"]').content;
+    const res = await fetch(`i18n/${lng}.json?v=${v}`);
+    if (!res.ok) throw new Error(`No ${lng}.json`);
+    const translations = await res.json();
+
+    await i18next.init({
+      lng,
+      fallbackLng: 'en',
+      debug: true,
+      resources: { [lng]: { translation: translations } }
+    });
+
+    localStorage.setItem('lang', lng);
+  } catch (err) {
+    console.warn('Falling back to English:', err);
+    await i18next.init({
+      lng: 'en',
+      fallbackLng: 'en',
+      resources: { en: { translation: {} } }
+    });
+    localStorage.setItem('lang', 'en');
+  }
+
+  applyTranslations();
+  loadQuestions();
+}
+
+function applyTranslations() {
+  document.title = i18next.t('title') || 'Quiz Trainer';
+  $('[data-i18n]').each(function() {
+    const key = $(this).data('i18n');
+    if (key) $(this).text(i18next.t(key));
+  });
+  feather.replace();
+}
+
+function populateTimeLimitSelect() {
+  const $select = $('#timeLimitSelect');
+  $select.empty();
+  for (let m = 5; m <= 240; m += 5) {
+    const opt = $('<option>').val(m).text(`${m} ${i18next.t('minutes') || 'minutes'}`);
+    if (m === 60) opt.prop('selected', true);
+    $select.append(opt);
+  }
+}
+
+// ── Main ready handler ──────────────────────────────────────────────────────
+
+$(document).ready(function() {
+  initI18n().then(() => {
+    populateTimeLimitSelect();
+
+    const lastFile  = localStorage.getItem('lastQtiFile');
+    const lastTime  = parseInt(localStorage.getItem('quizTimeLimit')) || 60;
+    const lastMode  = localStorage.getItem('trainingMode') === 'true';
+
+    if (lastFile) $('#qtiFileSelect').val(lastFile);
+    $('#timeLimitSelect').val(lastTime);
+    $('#trainingModeCheck').prop('checked', lastMode);
+
+    feather.replace();
+    if (typeof updateQuickStats === 'function') updateQuickStats();
+
+    $('#loadAndStart').on('click', function() {
+      const file = $('#qtiFileSelect').val();
+      if (!file) {
+        alert(i18next.t('please_select_file') || "Please select a test file first.");
+        return;
+      }
+
+      const minutes = parseInt($('#timeLimitSelect').val()) || 60;
+      const training = $('#trainingModeCheck').is(':checked');
+
+      localStorage.setItem('lastQtiFile', file);
+      localStorage.setItem('quizTimeLimit', minutes);
+      localStorage.setItem('trainingMode', training);
+
+      showProgressBar();
+      $('#selectorCard, #quickStatsCard').hide();
+      $('#quizContainer').show();
+
+      startQuiz(file, training);
+    });
+
+    $('#resetQuizBtn').on('click', function(e) {
+      e.preventDefault();
+      if ($('#quizContainer').is(':visible') && !confirm(i18next.t('confirm_reset') || "Current attempt will be discarded. Continue?")) return;
+      resetQuiz();
+    });
+
+    $('#statsBtn').on('click', function(e) {
+      e.preventDefault();
+      $('#quizContainer').hide();
+      $('#selectorCard, #quickStatsCard').hide();
+      if (typeof showStats === 'function') showStats();
+    });
+  });
+});
+</script>
+</body>
+</html>

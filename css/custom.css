@@ -1,0 +1,79 @@
+/* ==================== General Theme ==================== */
+body {
+  background-color: #121212;
+  color: #e0e0e0;
+}
+
+.card {
+  border-color: #333;
+}
+
+/* ==================== Option Items (Modern Full-Block Style) ==================== */
+.option-item {
+  transition: all 0.2s ease;
+  cursor: pointer;
+  position: relative;
+  padding: 14px 16px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  background-color: #2c2c2c;
+  border: 2px solid transparent;
+  user-select: none;
+}
+
+.option-item:hover {
+  background-color: #383838;
+  border-color: #555;
+}
+
+.option-item.selected {
+  background-color: rgba(13, 110, 253, 0.35);
+  border-color: #0d6efd;
+}
+
+.option-item.selected::after {
+  content: "✓";
+  position: absolute;
+  right: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.4rem;
+  color: #0d6efd;
+  font-weight: bold;
+}
+
+/* Feedback styles */
+.option-item.correct {
+  background-color: rgba(25, 135, 84, 0.25) !important;
+  border-color: #198754;
+}
+
+.option-item.incorrect {
+  background-color: rgba(220, 53, 69, 0.25) !important;
+  border-color: #dc3545;
+}
+
+/* Timer warning */
+#timer-badge.bg-danger {
+  animation: pulse 800ms infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+/* ==================== General Improvements ==================== */
+.list-group-item {
+  background-color: #2c2c2c;
+  border-color: #444;
+}
+
+.list-group-item:hover {
+  background-color: #383838;
+}
+
+/* Small improvements */
+.btn:disabled {
+  opacity: 0.65;
+}

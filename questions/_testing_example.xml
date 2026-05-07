@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<questestinterop xmlns="http://www.imsglobal.org/xsd/ims_qtirootv1p2"
+                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xsi:schemaLocation="http://www.imsglobal.org/xsd/ims_qtirootv1p2 http://www.imsglobal.org/profile/cc/ccv1p0/derived_schema/domainProfile_4/ims_qtiasiv1p2_localised.xsd">
+
+  <!-- ============================================= -->
+  <!-- Frage 1: Single Choice (klassisch)           -->
+  <!-- ============================================= -->
+  <item ident="example-single-001" label="1">
+    <presentation>
+      <material>
+        <mattext texttype="text/html"><![CDATA[Welches ist das erste PRINCE2-Prinzip?]]></mattext>
+      </material>
+      <response_lid ident="R1" rcardinality="Single">
+        <render_choice shuffle="Yes">
+          <response_label ident="A"><flow_mat><material><mattext>Fortlaufende geschäftliche Rechtfertigung sicherstellen</mattext></material></flow_mat></response_label>
+          <response_label ident="B"><flow_mat><material><mattext>Lernen aus Erfahrung</mattext></material></flow_mat></response_label>
+          <response_label ident="C"><flow_mat><material><mattext>Steuern nach dem Ausnahmeprinzip</mattext></material></flow_mat></response_label>
+          <response_label ident="D"><flow_mat><material><mattext>Produktorientierung</mattext></material></flow_mat></response_label>
+        </render_choice>
+      </response_lid>
+    </presentation>
+
+    <resprocessing>
+      <outcomes><decvar varname="SCORE" vartype="Decimal" defaultval="0" minvalue="0" maxvalue="1"/></outcomes>
+      <respcondition continue="No">
+        <conditionvar><varequal respident="R1">A</varequal></conditionvar>
+        <setvar varname="SCORE" action="Set">1</setvar>
+        <displayfeedback linkrefid="correct"/>
+      </respcondition>
+    </resprocessing>
+
+    <!-- Per-option feedback (QTI 2.1+ style) -->
+    <itemfeedback ident="A">
+      <flow_mat><material><mattext>Richtig! Dies ist das erste Prinzip – ein Projekt muss immer eine gültige geschäftliche Rechtfertigung haben.</mattext></material></flow_mat>
+    </itemfeedback>
+    <itemfeedback ident="B">
+      <flow_mat><material><mattext>Falsch. Lernen aus Erfahrung ist ein wichtiges Prinzip, aber nicht das erste.</mattext></material></flow_mat>
+    </itemfeedback>
+    <itemfeedback ident="C">
+      <flow_mat><material><mattext>Falsch. Ausnahmeprinzip ist wichtig, steht aber nicht an erster Stelle.</mattext></material></flow_mat>
+    </itemfeedback>
+    <itemfeedback ident="D">
+      <flow_mat><material><mattext>Falsch. Produktorientierung kommt später.</mattext></material></flow_mat>
+    </itemfeedback>
+
+    <!-- Global fallback (optional) -->
+    <itemfeedback ident="correct">
+      <flow_mat><material><mattext>Richtig! Das erste PRINCE2-Prinzip ist „Fortlaufende geschäftliche Rechtfertigung sicherstellen“.</mattext></material></flow_mat>
+    </itemfeedback>
+    <itemfeedback ident="incorrect">
+      <flow_mat><material><mattext>Falsch. Die richtige Antwort ist A.</mattext></material></flow_mat>
+    </itemfeedback>
+  </item>
+
+  <!-- ============================================= -->
+  <!-- Frage 2: Multiple Choice (mehrere richtig)    -->
+  <!-- ============================================= -->
+  <item ident="example-multi-002" label="2">
+    <presentation>
+      <material>
+        <mattext texttype="text/html"><![CDATA[Welche ZWEI der folgenden Aussagen sind Ziele des Prozesses „Initiieren eines Projekts“?]]></mattext>
+      </material>
+      <response_lid ident="R2" rcardinality="Multiple">
+        <render_choice shuffle="Yes">
+          <response_label ident="1"><flow_mat><material><mattext>Eine solide Grundlage für das Projekt schaffen</mattext></material></flow_mat></response_label>
+          <response_label ident="2"><flow_mat><material><mattext>Den Phasenplan für die nächste Phase erstellen</mattext></material></flow_mat></response_label>
+          <response_label ident="3"><flow_mat><material><mattext>Die geschäftliche Rechtfertigung detailliert aufbauen</mattext></material></flow_mat></response_label>
+          <response_label ident="4"><flow_mat><material><mattext>Den Projektmanager ernennen</mattext></material></flow_mat></response_label>
+        </render_choice>
+      </response_lid>
+    </presentation>
+
+    <resprocessing>
+      <outcomes><decvar varname="SCORE" vartype="decimal" defaultval="0" minvalue="0" maxvalue="1"/></outcomes>
+      <respcondition continue="No">
+        <conditionvar>
+          <and>
+            <varequal respident="R2">1</varequal>
+            <varequal respident="R2">3</varequal>
+          </and>
+        </conditionvar>
+        <setvar varname="SCORE" action="Set">1</setvar>
+        <displayfeedback linkrefid="correct"/>
+      </respcondition>
+    </resprocessing>
+
+    <!-- Per-option feedback -->
+    <itemfeedback ident="1"><flow_mat><material><mattext>Richtig – eine solide Basis ist ein zentrales Ziel.</mattext></material></flow_mat></itemfeedback>
+    <itemfeedback ident="2"><flow_mat><material><mattext>Falsch – das passiert in „Managen eines Phasenübergangs“.</mattext></material></flow_mat></itemfeedback>
+    <itemfeedback ident="3"><flow_mat><material><mattext>Richtig – detaillierter Business Case wird hier erstellt.</mattext></material></flow_mat></itemfeedback>
+    <itemfeedback ident="4"><flow_mat><material><mattext>Falsch – der Projektmanager wird früher ernannt.</mattext></material></flow_mat></itemfeedback>
+
+    <itemfeedback ident="correct"><flow_mat><material><mattext>Richtig! Die Antworten 1 und 3 sind korrekt.</mattext></material></flow_mat></itemfeedback>
+    <itemfeedback ident="incorrect"><flow_mat><material><mattext>Falsch. Die richtigen Antworten sind 1 und 3.</mattext></material></flow_mat></itemfeedback>
+  </item>
+
+  <!-- ============================================= -->
+  <!-- Frage 3: True/False (Single Choice, 2 Optionen) -->
+  <!-- ============================================= -->
+  <item ident="example-truefalse-003" label="3">
+    <presentation>
+      <material>
+        <mattext texttype="text/html"><![CDATA[In PRINCE2 muss jedes Projekt immer in mindestens zwei Managementphasen unterteilt sein.]]></mattext>
+      </material>
+      <response_lid ident="R3" rcardinality="Single">
+        <render_choice shuffle="No">
+          <response_label ident="True"><flow_mat><material><mattext>Wahr</mattext></material></flow_mat></response_label>
+          <response_label ident="False"><flow_mat><material><mattext>Falsch</mattext></material></flow_mat></response_label>
+        </render_choice>
+      </response_lid>
+    </presentation>
+
+    <resprocessing>
+      <outcomes><decvar varname="SCORE" vartype="Decimal" defaultval="0"/></outcomes>
+      <respcondition continue="No">
+        <conditionvar><varequal respident="R3">False</varequal></conditionvar>
+        <setvar varname="SCORE" action="Set">1</setvar>
+        <displayfeedback linkrefid="correct"/>
+      </respcondition>
+    </resprocessing>
+
+    <itemfeedback ident="True">
+      <flow_mat><material><mattext>Falsch – ein sehr kleines Projekt kann auch nur eine Phase haben.</mattext></material></flow_mat>
+    </itemfeedback>
+    <itemfeedback ident="False">
+      <flow_mat><material><mattext>Richtig – PRINCE2 schreibt keine feste Mindestanzahl vor.</mattext></material></flow_mat>
+    </itemfeedback>
+  </item>
+
+  <!-- ============================================= -->
+  <!-- Frage 4: Matching / Zuordnungsfrage (vereinfacht) -->
+  <!-- ============================================= -->
+  <item ident="example-matching-004" label="4">
+    <presentation>
+      <material>
+        <mattext texttype="text/html"><![CDATA[Ordnen Sie die PRINCE2-Rollen den Hauptaufgaben zu:]]></mattext>
+      </material>
+      <response_lid ident="R4a" rcardinality="Single">
+        <render_choice shuffle="Yes">
+          <response_label ident="A1"><flow_mat><material><mattext>Projektauftraggeber</mattext></material></flow_mat></response_label>
+          <response_label ident="A2"><flow_mat><material><mattext>Projektmanager</mattext></material></flow_mat></response_label>
+        </render_choice>
+      </response_lid>
+      <response_lid ident="R4b" rcardinality="Single">
+        <render_choice shuffle="Yes">
+          <response_label ident="B1"><flow_mat><material><mattext>Rechenschaftspflicht gegenüber dem Business</mattext></material></flow_mat></response_label>
+          <response_label ident="B2"><flow_mat><material><mattext>Tägliches Management der Phase</mattext></material></flow_mat></response_label>
+        </render_choice>
+      </response_lid>
+    </presentation>
+    <!-- In realem QTI wäre hier eine komplexere Auswertung nötig – hier vereinfacht -->
+    <resprocessing>
+      <outcomes><decvar varname="SCORE" vartype="decimal"/></outcomes>
+      <respcondition continue="Yes">
+        <conditionvar>
+          <and>
+            <varequal respident="R4a">A1</varequal>
+            <varequal respident="R4b">B1</varequal>
+          </and>
+        </conditionvar>
+        <setvar varname="SCORE" action="Set">1</setvar>
+      </respcondition>
+    </resprocessing>
+  </item>
+
+    <!-- Question 5 -->
+    <item ident="q5" label="5">
+      <qticomment>Scrum Product Owner accountability</qticomment>
+      <presentation>
+        <material>
+          <mattext texttype="text/html"><![CDATA[<p>In the LearnSphere case, which statement best describes Ananya’s primary accountability as Product Owner?</p>]]></mattext>
+        </material>
+        <response_lid ident="RESPONSE1" rcardinality="Single" rtiming="No">
+          <render_choice shuffle="Yes">
+            <response_label ident="A"><flow_mat><material><mattext>Ensuring the team follows coding standards</mattext></material></flow_mat></response_label>
+            <response_label ident="B"><flow_mat><material><mattext>Maximizing product value by managing and ordering the Product Backlog</mattext></material></flow_mat></response_label>
+            <response_label ident="C"><flow_mat><material><mattext>Approving the team’s technical design decisions</mattext></material></flow_mat></response_label>
+            <response_label ident="D"><flow_mat><material><mattext>Tracking team members’ daily individual performance</mattext></material></flow_mat></response_label>
+          </render_choice>
+        </response_lid>
+      </presentation>
+      <resprocessing>
+        <outcomes><decvar varname="SCORE" vartype="Decimal" defaultval="0" minvalue="0" maxvalue="1"/></outcomes>
+        <respcondition title="correct" continue="No">
+          <conditionvar><varequal respident="RESPONSE1">B</varequal></conditionvar>
+          <setvar action="Set">1</setvar>
+          <displayfeedback feedbacktype="Response" linkrefid="B"/>
+        </respcondition>
+      </resprocessing>
+      <itemfeedback ident="A"><flow_mat><material><mattext>Incorrect. Ensuring coding standards is a developer or technical responsibility, not the Product Owner’s role.</mattext></material></flow_mat></itemfeedback>
+      <itemfeedback ident="B"><flow_mat><material><mattext>Correct. As Product Owner, Ananya’s primary accountability is maximizing the value of the product by managing and ordering the Product Backlog. In the case, she collaborates with trainers and sales to gather user stories, prioritizes them based on value and risk, reorders items as feedback arrives, connects each item to the Product Goal (“making course design faster and more consistent”), and protects focus by saying “no” or “not now” to low-value requests. This aligns with the Scrum Guide’s definition of the Product Owner role.</mattext></material></flow_mat></itemfeedback>
+      <itemfeedback ident="C"><flow_mat><material><mattext>Incorrect. Technical design decisions belong to the self-managing Developers team.</mattext></material></flow_mat></itemfeedback>
+      <itemfeedback ident="D"><flow_mat><material><mattext>Incorrect. Tracking individual performance is not part of any Scrum role; the team is self-managing.</mattext></material></flow_mat></itemfeedback>
+      <itemfeedback ident="incorrect"><flow_mat><material><mattext>Incorrect – see explanations for each option.</mattext></material></flow_mat></itemfeedback>
+    </item>
+
+</questestinterop>
