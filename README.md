@@ -49,7 +49,7 @@ A modern, offline-first QTI quiz application built for certification preparation
 
 ## Demo
 
-![Preview](https://wenzler.github.io/quiz/)
+[Preview](https://wenzler.github.io/quiz/)
 
 ## License
 
