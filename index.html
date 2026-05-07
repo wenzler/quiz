@@ -67,7 +67,7 @@
 <div class="container-fluid mt-4">
   <div class="row justify-content-center">
     <main class="col-lg-10 col-xl-9 px-md-4">
-      
+
       <!-- Quick Stats -->
       <div class="card bg-dark text-white mb-4" id="quickStatsCard">
         <div class="card-body">
@@ -81,20 +81,15 @@
         <div class="card-body">
           <h5 data-i18n="select_test_file">Select test file</h5>
           
-          <!-- Built-in vs Custom Toggle -->
-          <select class="form-select mb-3" id="fileSourceSelect">
-            <option value="built-in">Built-in Tests</option>
-            <option value="custom">Load Your Own QTI File (.xml)</option>
+          <select class="form-select mb-3" id="qtiFileSelect">
+            <!-- Built-in files populated here by JS -->
           </select>
 
-          <!-- Built-in File Selector -->
-          <select class="form-select mb-3" id="qtiFileSelect"></select>
-
-          <!-- Custom File Upload -->
+          <!-- Custom File Upload Area -->
           <div class="mb-3" id="customFileGroup" style="display: none;">
-            <label class="form-label">Choose your QTI XML file</label>
+            <label class="form-label">Load your own QTI XML file</label>
             <input type="file" id="customFileInput" accept=".xml" class="form-control">
-            <small class="text-muted">Supports standard QTI XML files</small>
+            <small class="text-muted">Select a valid QTI .xml file from your computer</small>
           </div>
 
           <div class="mb-3">
@@ -234,31 +229,6 @@ function populateTimeLimitSelect() {
 
 
 // ── Handle custom file upload ───────────────────────────────────────────
-$('#customFileInput').on('change', function(e) {
-  const file = e.target.files[0];
-  if (!file) return;
-
-  if (!file.name.toLowerCase().endsWith('.xml')) {
-    alert("Please select a valid .xml file");
-    return;
-  }
-
-  const reader = new FileReader();
-  
-  reader.onload = function(event) {
-    const xmlContent = event.target.result;
-
-    // Hide selector and show quiz
-    $('#selectorCard, #quickStatsCard').hide();
-    $('#quizContainer').show();
-    showProgressBar();
-
-    // Start quiz with custom content
-    startCustomQuiz(xmlContent, file.name);
-  };
-
-  reader.readAsText(file);
-});
 
 // New function to handle custom XML
 function startCustomQuiz(xmlContent, filename) {
@@ -299,15 +269,13 @@ function startCustomQuiz(xmlContent, filename) {
     alert("Failed to parse the XML file. Please make sure it's a valid QTI file.");
   }
 }
-  
-// Toggle custom file input
-$('#fileSourceSelect').on('change', function() {
+
+// Handle "Custom local XML" selection
+$('#qtiFileSelect').on('change', function() {
   if ($(this).val() === 'custom') {
     $('#customFileGroup').show();
-    $('#qtiFileSelect').hide();
   } else {
     $('#customFileGroup').hide();
-    $('#qtiFileSelect').show();
   }
 });
 
@@ -324,7 +292,8 @@ $('#customFileInput').on('change', function(e) {
   const reader = new FileReader();
   reader.onload = function(event) {
     const xmlContent = event.target.result;
-    
+
+    // Hide selector and start quiz
     $('#selectorCard, #quickStatsCard').hide();
     $('#quizContainer').show();
     showProgressBar();
