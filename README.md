@@ -7,15 +7,11 @@ A modern, offline-first QTI quiz application built for certification preparation
 - **Multiple Question Types**: Single choice, Multiple choice, Matching/Association
 - **Training Mode**: Immediate feedback after each question
 - **Exam Mode**: Timed attempt with final results
-- **Keyboard Shortcuts**:
-  - `1-9` → Select answers
-  - `C` → Check Answer (Training)
-  - `N` → Next Question
-  - `P` → Previous Question
-  - `F` → Finish Attempt
+- **Keyboard Shortcuts**: For ultra fast navigation
 - **Touch Swipe**: Swipe left/right on mobile to navigate
 - **Progress Bar**: Clickable visual progress
 - **Detailed Review**: Complete answer review at the end
+- **Score Statistics**: Using local storage
 - **Confetti Celebration** on 100% score
 - **Dark Theme** optimized for long study sessions
 - **i18n Support** (English + German ready)
@@ -25,6 +21,7 @@ A modern, offline-first QTI quiz application built for certification preparation
 - Bootstrap 5.3.8
 - jQuery
 - i18next
+- Chart.js
 - Canvas Confetti
 - Pure vanilla JavaScript + QTI XML parser
 
@@ -46,6 +43,8 @@ A modern, offline-first QTI quiz application built for certification preparation
 | `N`        | Next Question             |
 | `P`        | Previous Question         |
 | `F`        | Finish Attempt            |
+| `S`        | Start Attempt             |
+| `X`        | Bypass Introduction       |
 
 ## Demo
 
