@@ -49,7 +49,7 @@
       </respcondition>
     </resprocessing>
   </item>
-
+  
   <!-- ==================== MATCHING / ASSOCIATION ==================== -->
   <item ident="q3" label="match-003">
     <presentation>
@@ -59,6 +59,7 @@
           <response_label ident="A1"><mattext>France</mattext></response_label>
           <response_label ident="A2"><mattext>Japan</mattext></response_label>
           <response_label ident="A3"><mattext>Brazil</mattext></response_label>
+          <response_label ident="A4"><mattext>Egypt</mattext></response_label>
         </render_choice>
       </response_lid>
       <response_lid ident="R4b" rcardinality="Single">
@@ -66,6 +67,7 @@
           <response_label ident="B1"><mattext>Tokyo</mattext></response_label>
           <response_label ident="B2"><mattext>Paris</mattext></response_label>
           <response_label ident="B3"><mattext>Brasília</mattext></response_label>
+          <response_label ident="B4"><mattext>Cairo</mattext></response_label>
         </render_choice>
       </response_lid>
     </presentation>
@@ -82,6 +84,10 @@
         <and>
           <varequal respident="R4a">A3</varequal>
           <varequal respident="R4b">B3</varequal>
+        </and>
+        <and>
+          <varequal respident="R4a">A4</varequal>
+          <varequal respident="R4b">B4</varequal>
         </and>
       </respcondition>
     </resprocessing>
